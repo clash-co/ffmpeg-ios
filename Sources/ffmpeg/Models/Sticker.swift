@@ -34,7 +34,7 @@ protocol Sticker: AnyObject {
     var position: Position { get }
 }
 
-public class GiphySticker: Sticker {
+public class GifSticker: Sticker {
     var id = UUID()
     var url: URL
     var position: Position

@@ -35,8 +35,11 @@ public struct FFmpeg {
         
         // Concatanate videos and stickers
         commands.append("-filter_complex")
-        commands.append("\"")
-        commands.append(
+        
+        /// OPEN FILTER COMMAND
+        ///
+        var filterCommand = ["\""]
+        filterCommand.append(
             contentsOf: videoAssetUrls
                 .indices
                 .compactMap({
@@ -50,15 +53,16 @@ public struct FFmpeg {
                 })
         )
         
-        commands.append(contentsOf: videoAssetUrls.indices.compactMap({ "[outv\($0)][outa\($0)]" }))
-        commands.append("concat=n=\(videoAssetUrls.count):v=1:a=1[outv][outa];")
+        filterCommand.append(videoAssetUrls.indices.compactMap({ "[outv\($0)][outa\($0)]" }).joined())
+        filterCommand.append("concat=n=\(videoAssetUrls.count):v=1:a=1[outv][outa];")
         
         // Stickers
-        commands.append(
+        filterCommand.append(
             contentsOf: giphyAssetUrls
                 .indices
                 .compactMap({
                     let sticker = stickers[$0]
+                    let index = videoAssetUrls.count + $0
                     
                     let scale = sticker.position.size.ffmpegScale
                     let angle = sticker.position.rotation.ffmpegAngle
@@ -71,11 +75,16 @@ public struct FFmpeg {
         )
         
         // Make sure it does not finish on `;`, otherwise the execution will fail
-        if commands.last?.last == ";" {
-            commands[commands.count - 1].popLast()
+        if filterCommand.last?.last == ";" {
+            filterCommand[filterCommand.count - 1].popLast()
         }
         
-        commands.append("\"")
+        filterCommand.append("\"")
+        
+        ///
+        /// CLOSE FILTER COMMAND
+        
+        commands.append(filterCommand.joined())
         
         // Finalize the settings
         commands.append(contentsOf: [

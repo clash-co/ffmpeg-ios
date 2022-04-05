@@ -12,7 +12,8 @@ public class VideoClip {
     init(url: URL) throws {
         let asset = AVMovie(url: url)
 
-        guard let videoTrack = asset.tracks(withMediaType: .video).first else {
+        // Make sure the video contains a video track
+        guard let _ = asset.tracks(withMediaType: .video).first else {
             throw VideoClipError.noVideoTrack
         }
         self.url = url
