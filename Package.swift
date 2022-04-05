@@ -237,5 +237,9 @@ let package = Package(
         // .binaryTarget(
         //     name: "xvidcore",
         //     path: "Frameworks/xvidcore.xcframework")
+        .testTarget(
+            name: "ffmpegTests",
+            dependencies: ["ffmpeg"],
+            resources: [.copy("Assets")]),
     ]
 )
